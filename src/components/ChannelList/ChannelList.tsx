@@ -5,7 +5,7 @@
 import React, { useMemo, useRef, useEffect, useCallback } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { motion } from 'framer-motion';
-import { FiHeart, FiTv, FiMoreVertical, FiSearch, FiX } from 'react-icons/fi';
+import { FiHeart, FiTv, FiChevronLeft, FiChevronRight, FiSearch, FiX } from 'react-icons/fi';
 import { useUIStore } from '../../store/useUIStore';
 import { usePlaylistStore } from '../../store/usePlaylistStore';
 import { useFavoritesStore } from '../../store/useFavoritesStore';
@@ -374,7 +374,7 @@ export const ChannelList: React.FC = () => {
   if (isLoading && filteredChannels.length === 0) {
     return (
       <div className="w-full md:w-[320px] flex-shrink-0 bg-[#0B1020] border-r border-[#1E2A4A] flex flex-col overflow-hidden h-full">
-        <div style={{ padding: '10px 14px', borderBottom: '1px solid #1E2A4A', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ padding: '8px 12px', borderBottom: '1px solid #1E2A4A', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div className="loading-skeleton" style={{ height: '16px', width: '100px', borderRadius: '4px' }} />
         </div>
         <LoadingSkeleton />
@@ -384,37 +384,44 @@ export const ChannelList: React.FC = () => {
 
   return (
     <div className="w-full md:w-[320px] flex-shrink-0 bg-[#0B1020] border-b md:border-b-0 md:border-r border-[#1E2A4A] flex flex-col overflow-hidden h-full min-h-0">
-      {/* Sleek Header */}
+      {/* Compact Header with Arrow Toggle Button */}
       <div
         style={{
-          padding: '8px 12px',
+          padding: '5px 10px',
           borderBottom: '1px solid #1E2A4A',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           background: '#0D1428',
           flexShrink: 0,
+          height: '36px',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
+          {/* Arrow icon button replacing three dots */}
           <button
             onClick={toggleSidebar}
-            title={isSidebarOpen ? "Hide Categories" : "Show Categories"}
+            title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
             style={{
-              background: 'transparent',
-              border: 'none',
+              background: '#1A2140',
+              border: '1px solid #1E2A4A',
               color: '#B8C1EC',
               cursor: 'pointer',
-              padding: '3px',
-              borderRadius: '6px',
+              padding: '2px 4px',
+              borderRadius: '5px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              transition: 'all 0.15s',
             }}
           >
-            <FiMoreVertical style={{ fontSize: '15px' }} />
+            {isSidebarOpen ? (
+              <FiChevronLeft style={{ fontSize: '15px', color: '#6D5DF6' }} />
+            ) : (
+              <FiChevronRight style={{ fontSize: '15px', color: '#6D5DF6' }} />
+            )}
           </button>
-          <FiTv style={{ color: '#6D5DF6', fontSize: '14px', flexShrink: 0 }} />
+          <FiTv style={{ color: '#6D5DF6', fontSize: '13px', flexShrink: 0 }} />
           <span style={{ color: '#FFFFFF', fontSize: '12px', fontWeight: 600 }}>
             {filteredChannels.length} <span style={{ color: '#6B7280', fontWeight: 400 }}>channels</span>
           </span>
@@ -423,7 +430,7 @@ export const ChannelList: React.FC = () => {
               style={{
                 fontSize: '10px',
                 fontWeight: 700,
-                padding: '1px 6px',
+                padding: '1px 5px',
                 borderRadius: '4px',
                 background: 'rgba(109,93,246,0.2)',
                 color: '#8B7DF8',
@@ -442,8 +449,8 @@ export const ChannelList: React.FC = () => {
           <div
             className="animate-spin"
             style={{
-              width: '13px',
-              height: '13px',
+              width: '12px',
+              height: '12px',
               border: '2px solid rgba(109,93,246,0.3)',
               borderTopColor: '#6D5DF6',
               borderRadius: '50%',
@@ -452,13 +459,13 @@ export const ChannelList: React.FC = () => {
         )}
       </div>
 
-      {/* Sleek Search Input */}
-      <div style={{ padding: '6px 10px', borderBottom: '1px solid #1E2A4A', background: '#0B1020', flexShrink: 0 }}>
+      {/* Sleek Compact Relocated Search Input */}
+      <div style={{ padding: '4px 8px', borderBottom: '1px solid #1E2A4A', background: '#0B1020', flexShrink: 0 }}>
         <div style={{ position: 'relative' }}>
           <FiSearch
             style={{
-              position: 'absolute', left: '9px', top: '50%', transform: 'translateY(-50%)',
-              color: '#6B7280', fontSize: '12px', pointerEvents: 'none',
+              position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)',
+              color: '#6B7280', fontSize: '11px', pointerEvents: 'none',
             }}
           />
           <input
@@ -470,11 +477,11 @@ export const ChannelList: React.FC = () => {
               width: '100%',
               background: '#1A2140',
               border: '1px solid #1E2A4A',
-              borderRadius: '7px',
-              paddingLeft: '28px',
-              paddingRight: searchQuery ? '26px' : '10px',
-              height: '30px',
-              fontSize: '12px',
+              borderRadius: '6px',
+              paddingLeft: '26px',
+              paddingRight: searchQuery ? '24px' : '8px',
+              height: '28px',
+              fontSize: '11.5px',
               color: 'white',
               outline: 'none',
               boxSizing: 'border-box',
@@ -484,11 +491,11 @@ export const ChannelList: React.FC = () => {
             <button
               onClick={() => setSearchQuery('')}
               style={{
-                position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)',
+                position: 'absolute', right: '5px', top: '50%', transform: 'translateY(-50%)',
                 background: 'none', border: 'none', cursor: 'pointer', color: '#6B7280', padding: '2px',
               }}
             >
-              <FiX style={{ fontSize: '12px' }} />
+              <FiX style={{ fontSize: '11px' }} />
             </button>
           )}
         </div>
@@ -531,7 +538,7 @@ export const ChannelList: React.FC = () => {
             flex: 1,
             overflowY: 'auto',
             overflowX: 'hidden',
-            padding: '4px 6px',
+            padding: '3px 5px',
             contain: 'strict',
             willChange: 'transform',
             WebkitOverflowScrolling: 'touch',
