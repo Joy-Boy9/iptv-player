@@ -121,7 +121,7 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
       </button>
 
       {/* Volume section */}
-      <div className="flex items-center gap-2 group">
+      <div className="flex items-center gap-1 sm:gap-2 group">
         <button
           onClick={onMuteToggle}
           className="text-white hover:text-[#6D5DF6] transition-colors p-1 rounded-full hover:bg-white/10"
@@ -133,8 +133,8 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
           }
         </button>
         <div
-          className="overflow-hidden transition-all duration-300"
-          style={{ width: '80px' }}
+          className="hidden sm:block overflow-hidden transition-all duration-300"
+          style={{ width: '70px' }}
         >
           <input
             type="range"
@@ -154,7 +154,7 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
             aria-label="Volume"
           />
         </div>
-        <span className="text-white/50 text-xs w-8 font-mono">{isMuted ? 0 : volume}%</span>
+        <span className="hidden sm:inline text-white/50 text-xs w-7 font-mono">{isMuted ? 0 : volume}%</span>
       </div>
 
       {/* Spacer */}
@@ -708,89 +708,92 @@ export const VideoPlayer: React.FC = () => {
             </div>
           </div>
 
-          {/* Stats row */}
-          <div
-            className="grid grid-cols-3 gap-px border-b"
-            style={{ background: '#1E2A4A', borderColor: '#1E2A4A' }}
-          >
-            {[
-              { label: 'Watch Time', value: formatTime(watchTime) },
-              {
-                label: 'Status',
-                value: isPlaying ? '● Live' : error ? '✕ Error' : '⏸ Paused',
-                color: isPlaying ? '#4ADE80' : error ? '#F87171' : '#FBBF24',
-              },
-              { label: 'Channel #', value: `#${currentChannel.number}` },
-            ].map((stat) => (
-              <div key={stat.label} className="py-2.5 px-3" style={{ background: '#12192E' }}>
-                <p className="text-[#6B7280] text-xs mb-0.5">{stat.label}</p>
-                <p
-                  className="text-sm font-semibold font-mono"
-                  style={{ color: stat.color ?? 'white' }}
-                >
-                  {stat.value}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          {/* Stream URL */}
-          <div className="px-4 py-3 border-b" style={{ borderColor: '#1E2A4A' }}>
-            <div className="flex items-center justify-between mb-1.5">
-              <p className="text-[#6B7280] text-xs font-medium uppercase tracking-wider">Stream URL</p>
-              <button
-                onClick={handleCopyUrl}
-                className="flex items-center gap-1 text-xs transition-colors font-medium"
-                style={{ color: copied ? '#4ADE80' : '#6D5DF6' }}
-              >
-                <FiCopy style={{ fontSize: '11px' }} />
-                {copied ? 'Copied!' : 'Copy'}
-              </button>
-            </div>
-            <p
-              className="text-xs font-mono truncate rounded px-2 py-1.5"
-              style={{ background: '#0B1020', color: '#B8C1EC', border: '1px solid #1E2A4A' }}
+          {/* Desktop-only extra detail panels */}
+          <div className="hidden md:block">
+            {/* Stats row */}
+            <div
+              className="grid grid-cols-3 gap-px border-b"
+              style={{ background: '#1E2A4A', borderColor: '#1E2A4A' }}
             >
-              {currentChannel.url}
-            </p>
-          </div>
+              {[
+                { label: 'Watch Time', value: formatTime(watchTime) },
+                {
+                  label: 'Status',
+                  value: isPlaying ? '● Live' : error ? '✕ Error' : '⏸ Paused',
+                  color: isPlaying ? '#4ADE80' : error ? '#F87171' : '#FBBF24',
+                },
+                { label: 'Channel #', value: `#${currentChannel.number}` },
+              ].map((stat) => (
+                <div key={stat.label} className="py-2.5 px-3" style={{ background: '#12192E' }}>
+                  <p className="text-[#6B7280] text-xs mb-0.5">{stat.label}</p>
+                  <p
+                    className="text-sm font-semibold font-mono"
+                    style={{ color: stat.color ?? 'white' }}
+                  >
+                    {stat.value}
+                  </p>
+                </div>
+              ))}
+            </div>
 
-          {/* EPG info */}
-          <div className="px-4 py-3 border-b" style={{ borderColor: '#1E2A4A' }}>
-            <p className="text-[#6B7280] text-xs font-medium uppercase tracking-wider mb-2">Programme Guide</p>
-            <div className="space-y-1.5">
-              <div className="flex items-center gap-2">
-                <span className="text-[#6D5DF6] text-xs font-semibold w-14">Playing</span>
-                <span className="text-[#6B7280] text-xs">No EPG data available</span>
+            {/* Stream URL */}
+            <div className="px-4 py-3 border-b" style={{ borderColor: '#1E2A4A' }}>
+              <div className="flex items-center justify-between mb-1.5">
+                <p className="text-[#6B7280] text-xs font-medium uppercase tracking-wider">Stream URL</p>
+                <button
+                  onClick={handleCopyUrl}
+                  className="flex items-center gap-1 text-xs transition-colors font-medium"
+                  style={{ color: copied ? '#4ADE80' : '#6D5DF6' }}
+                >
+                  <FiCopy style={{ fontSize: '11px' }} />
+                  {copied ? 'Copied!' : 'Copy'}
+                </button>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[#B8C1EC] text-xs font-semibold w-14">Next</span>
-                <span className="text-[#6B7280] text-xs">No information available</span>
+              <p
+                className="text-xs font-mono truncate rounded px-2 py-1.5"
+                style={{ background: '#0B1020', color: '#B8C1EC', border: '1px solid #1E2A4A' }}
+              >
+                {currentChannel.url}
+              </p>
+            </div>
+
+            {/* EPG info */}
+            <div className="px-4 py-3 border-b" style={{ borderColor: '#1E2A4A' }}>
+              <p className="text-[#6B7280] text-xs font-medium uppercase tracking-wider mb-2">Programme Guide</p>
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-[#6D5DF6] text-xs font-semibold w-14">Playing</span>
+                  <span className="text-[#6B7280] text-xs">No EPG data available</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[#B8C1EC] text-xs font-semibold w-14">Next</span>
+                  <span className="text-[#6B7280] text-xs">No information available</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Action buttons */}
-          <div className="grid grid-cols-3 gap-2 px-4 py-3">
-            {[
-              { label: 'EPG', emoji: '📅', onClick: () => {}, danger: false },
-              { label: 'Record', emoji: '🔴', onClick: () => {}, danger: true },
-              { label: 'Refresh', emoji: null, icon: <FiRefreshCw style={{ fontSize: '13px' }} />, onClick: handleReload, danger: false },
-            ].map((btn) => (
-              <button
-                key={btn.label}
-                onClick={btn.onClick}
-                className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-medium transition-all"
-                style={btn.danger
-                  ? { background: 'rgba(239,68,68,0.08)', color: '#F87171', border: '1px solid rgba(239,68,68,0.25)' }
-                  : { background: '#1A2140', color: '#B8C1EC', border: '1px solid #1E2A4A' }
-                }
-              >
-                {btn.emoji && <span>{btn.emoji}</span>}
-                {btn.icon}
-                {btn.label}
-              </button>
-            ))}
+            {/* Action buttons */}
+            <div className="grid grid-cols-3 gap-2 px-4 py-3">
+              {[
+                { label: 'EPG', emoji: '📅', onClick: () => {}, danger: false },
+                { label: 'Record', emoji: '🔴', onClick: () => {}, danger: true },
+                { label: 'Refresh', emoji: null, icon: <FiRefreshCw style={{ fontSize: '13px' }} />, onClick: handleReload, danger: false },
+              ].map((btn) => (
+                <button
+                  key={btn.label}
+                  onClick={btn.onClick}
+                  className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-medium transition-all"
+                  style={btn.danger
+                    ? { background: 'rgba(239,68,68,0.08)', color: '#F87171', border: '1px solid rgba(239,68,68,0.25)' }
+                    : { background: '#1A2140', color: '#B8C1EC', border: '1px solid #1E2A4A' }
+                  }
+                >
+                  {btn.emoji && <span>{btn.emoji}</span>}
+                  {btn.icon}
+                  {btn.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       ) : (
