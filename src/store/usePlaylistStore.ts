@@ -198,10 +198,10 @@ export const usePlaylistStore = create<PlaylistStore>((set, get) => ({
       return { playlists: updatedPlaylists };
     });
 
-    // If user checks a playlist tick mark and its channels aren't loaded yet, auto-fetch in background
+    // If enabling, auto-fetch channels if missing OR refresh if channelCount is 0
     if (willBeEnabled && playlist.type === 'url') {
-      const hasChannels = channels.some((c) => c.playlistId === id);
-      if (!hasChannels) {
+      const existingChannelsCount = channels.filter((c) => c.playlistId === id).length;
+      if (existingChannelsCount === 0) {
         await refreshPlaylist(id);
       }
     }
@@ -228,13 +228,16 @@ export const usePlaylistStore = create<PlaylistStore>((set, get) => ({
       const newChannels = await fetchAndParseM3U(playlist);
 
       set((state) => {
+        // Verify playlist is still present and enabled before updating channels
+        const currentPl = state.playlists.find((p) => p.id === id);
         const updatedPlaylists = state.playlists.map((p) =>
           p.id === id
             ? { ...p, lastUpdated: Date.now(), channelCount: newChannels.length }
             : p
         );
+
         const filteredChannels = state.channels.filter((c) => c.playlistId !== id);
-        const allChannels = [...filteredChannels, ...newChannels];
+        const allChannels = currentPl?.enabled ? [...filteredChannels, ...newChannels] : filteredChannels;
 
         storage.set('playlists', updatedPlaylists);
         storage.set('channels', allChannels);
@@ -252,7 +255,6 @@ export const usePlaylistStore = create<PlaylistStore>((set, get) => ({
         loadingPlaylistId: null,
         error: err instanceof Error ? err.message : 'Failed to refresh playlist',
       });
-      throw err;
     }
   },
 

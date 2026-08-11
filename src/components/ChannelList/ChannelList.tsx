@@ -288,7 +288,10 @@ export const ChannelList: React.FC = () => {
       const map = new Map(list.map((c) => [c.id, c]));
       return recentIds.map((id) => map.get(id)).filter((c): c is Channel => c !== undefined);
     } else if (selectedCategory !== 'all') {
-      list = list.filter((c) => c.group === selectedCategory);
+      const groupExists = list.some((c) => c.group === selectedCategory);
+      if (groupExists) {
+        list = list.filter((c) => c.group === selectedCategory);
+      }
     }
 
     if (searchQuery) {
