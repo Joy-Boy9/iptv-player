@@ -1,5 +1,5 @@
 // =============================================
-// Main App Component — Fully Responsive Layout
+// Main App Component — Ultra-Smooth & Responsive
 // =============================================
 
 import React, { useEffect } from 'react';
@@ -20,24 +20,24 @@ const LoadingOverlay: React.FC<{ isLoading: boolean }> = ({ isLoading }) => (
       <motion.div
         initial={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.5 }}
-        className="fixed inset-0 bg-bg-primary z-[100] flex flex-col items-center justify-center"
+        transition={{ duration: 0.4 }}
+        className="fixed inset-0 bg-[#0B1020] z-[100] flex flex-col items-center justify-center"
       >
         <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
+          initial={{ scale: 0.85, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           className="flex flex-col items-center gap-4"
         >
-          <div className="w-16 h-16 rounded-2xl bg-accent flex items-center justify-center shadow-2xl shadow-accent/40">
+          <div className="w-16 h-16 rounded-2xl bg-[#6D5DF6] flex items-center justify-center shadow-2xl shadow-[#6D5DF6]/40">
             <span className="text-3xl">📺</span>
           </div>
           <div className="text-center">
-            <h1 className="text-white font-bold text-2xl">IPTV Player</h1>
-            <p className="text-text-secondary text-sm mt-1">Loading your playlists...</p>
+            <h1 className="text-white font-bold text-2xl tracking-wide">IPTV Player</h1>
+            <p className="text-[#B8C1EC] text-sm mt-1">Loading channels & playlists...</p>
           </div>
-          <div className="w-48 h-1 bg-bg-card rounded-full overflow-hidden mt-2">
+          <div className="w-48 h-1 bg-[#1A2140] rounded-full overflow-hidden mt-2">
             <motion.div
-              className="h-full bg-accent rounded-full"
+              className="h-full bg-[#6D5DF6] rounded-full"
               animate={{ x: ['-100%', '100%'] }}
               transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
             />
@@ -83,13 +83,15 @@ function App() {
   const showLoading = !appInitialized;
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-bg-primary overflow-hidden">
+    <div className="h-screen w-screen flex flex-col bg-[#0B1020] overflow-hidden select-none">
       <LoadingOverlay isLoading={showLoading} />
 
-      {/* Top Header */}
+      {/* Top Header Bar */}
       <Header />
 
-      {/* Main Content */}
+      {/* Main Content Area */}
+      {/* Desktop (md:): Sidebar (220px) | ChannelList (320px) | VideoPlayer (flex-1) */}
+      {/* Mobile (<md): VideoPlayer top | ChannelList bottom */}
       <main className="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0">
         {/* Left Sidebar / Mobile Drawer */}
         <Sidebar
@@ -97,13 +99,14 @@ function App() {
           onImportFile={() => setPlaylistManagerOpen(true)}
         />
 
-        {/* Desktop Layout: Channel List then Video Player */}
-        {/* Mobile Layout: Video Player at top, Channel List below */}
-        <div className="contents md:flex md:flex-1 md:overflow-hidden">
-          <div className="order-2 md:order-1 flex-1 md:flex-initial flex flex-col min-h-0 overflow-hidden">
+        {/* Mobile View: VideoPlayer on top, ChannelList on bottom */}
+        {/* Desktop View: ChannelList left, VideoPlayer right */}
+        <div className="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0 min-w-0">
+          <div className="order-2 md:order-1 w-full md:w-[320px] md:flex-shrink-0 flex flex-col flex-1 md:flex-initial min-h-0 overflow-hidden">
             <ChannelList />
           </div>
-          <div className="order-1 md:order-2 flex-shrink-0 md:flex-1 flex flex-col min-h-0">
+
+          <div className="order-1 md:order-2 flex-shrink-0 md:flex-shrink md:flex-1 w-full flex flex-col min-h-0 min-w-0 overflow-hidden">
             <VideoPlayer />
           </div>
         </div>
