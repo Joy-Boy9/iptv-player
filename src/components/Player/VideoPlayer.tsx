@@ -253,7 +253,6 @@ export const VideoPlayer: React.FC = () => {
         maxBufferSize: 20 * 1024 * 1024,
         capLevelToPlayerSize: true,
         capLevelOnFPSDrop: true,
-        enableAudioWorklet: true,
         abrEwmaDefaultEstimate: 5000000,
         abrBandWidthFactor: 0.95,
         fragLoadingMaxRetry: 6,

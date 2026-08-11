@@ -236,6 +236,7 @@ export const ChannelList: React.FC = () => {
   const {
     selectedCategory,
     searchQuery,
+    setSearchQuery,
     selectedPlaylistFilter,
     setSelectedChannelIndex,
     selectedChannelIndex,
