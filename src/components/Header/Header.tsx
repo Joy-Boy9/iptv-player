@@ -12,15 +12,15 @@ export const Header: React.FC = () => {
 
   return (
     <header className="flex items-center justify-between px-3 md:px-4 h-11 md:h-12 bg-[#12192E] border-b border-[#1E2A4A] flex-shrink-0 z-40 gap-2">
-      {/* Left: Sidebar Menu Toggle + Brand Logo */}
+      {/* Left: Sidebar Menu Button (Three Bars) + IPTV PLAYER Logo */}
       <div className="flex items-center gap-2.5 flex-shrink-0">
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={toggleSidebar}
           className="p-1.5 rounded-lg bg-[#1A2140] text-[#B8C1EC] hover:text-white border border-[#1E2A4A] flex items-center justify-center cursor-pointer"
-          title="Categories & Playlists"
-          aria-label="Toggle Sidebar"
+          title="Toggle Categories Tab"
+          aria-label="Toggle Categories"
         >
           <FiMenu className="text-base" />
         </motion.button>

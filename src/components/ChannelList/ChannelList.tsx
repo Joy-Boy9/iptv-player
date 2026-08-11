@@ -5,7 +5,7 @@
 import React, { useMemo, useRef, useEffect, useCallback } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { motion } from 'framer-motion';
-import { FiHeart, FiTv, FiChevronLeft, FiChevronRight, FiSearch, FiX } from 'react-icons/fi';
+import { FiHeart, FiTv, FiSearch, FiX } from 'react-icons/fi';
 import { useUIStore } from '../../store/useUIStore';
 import { usePlaylistStore } from '../../store/usePlaylistStore';
 import { useFavoritesStore } from '../../store/useFavoritesStore';
@@ -253,8 +253,6 @@ export const ChannelList: React.FC = () => {
     selectedPlaylistFilter,
     setSelectedChannelIndex,
     selectedChannelIndex,
-    isSidebarOpen,
-    toggleSidebar,
   } = useUIStore();
 
   const { channels, playlists, isLoading } = usePlaylistStore();
@@ -384,43 +382,20 @@ export const ChannelList: React.FC = () => {
 
   return (
     <div className="w-full md:w-[320px] flex-shrink-0 bg-[#0B1020] border-b md:border-b-0 md:border-r border-[#1E2A4A] flex flex-col overflow-hidden h-full min-h-0">
-      {/* Compact Header with Arrow Toggle Button */}
+      {/* Clean Compact Header - No extra buttons */}
       <div
         style={{
-          padding: '5px 10px',
+          padding: '6px 12px',
           borderBottom: '1px solid #1E2A4A',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           background: '#0D1428',
           flexShrink: 0,
-          height: '36px',
+          height: '34px',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
-          {/* Arrow icon button replacing three dots */}
-          <button
-            onClick={toggleSidebar}
-            title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
-            style={{
-              background: '#1A2140',
-              border: '1px solid #1E2A4A',
-              color: '#B8C1EC',
-              cursor: 'pointer',
-              padding: '2px 4px',
-              borderRadius: '5px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'all 0.15s',
-            }}
-          >
-            {isSidebarOpen ? (
-              <FiChevronLeft style={{ fontSize: '15px', color: '#6D5DF6' }} />
-            ) : (
-              <FiChevronRight style={{ fontSize: '15px', color: '#6D5DF6' }} />
-            )}
-          </button>
           <FiTv style={{ color: '#6D5DF6', fontSize: '13px', flexShrink: 0 }} />
           <span style={{ color: '#FFFFFF', fontSize: '12px', fontWeight: 600 }}>
             {filteredChannels.length} <span style={{ color: '#6B7280', fontWeight: 400 }}>channels</span>
@@ -434,7 +409,7 @@ export const ChannelList: React.FC = () => {
                 borderRadius: '4px',
                 background: 'rgba(109,93,246,0.2)',
                 color: '#8B7DF8',
-                maxWidth: '90px',
+                maxWidth: '100px',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -459,7 +434,7 @@ export const ChannelList: React.FC = () => {
         )}
       </div>
 
-      {/* Sleek Compact Relocated Search Input */}
+      {/* Sleek Relocated Search Input */}
       <div style={{ padding: '4px 8px', borderBottom: '1px solid #1E2A4A', background: '#0B1020', flexShrink: 0 }}>
         <div style={{ position: 'relative' }}>
           <FiSearch

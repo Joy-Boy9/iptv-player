@@ -444,7 +444,7 @@ export const VideoPlayer: React.FC = () => {
             : {
                 width: '100%',
                 aspectRatio: '16/9',
-                maxHeight: '78vh',
+                maxHeight: '85vh',
                 cursor: 'default',
               }
         }
