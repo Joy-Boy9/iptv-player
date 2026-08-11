@@ -182,14 +182,14 @@ const PlayerControls: React.FC<PlayerControlsProps> = ({
 
       {/* Fullscreen */}
       <button
-        onClick={onFullscreen}
-        className="text-white hover:text-[#6D5DF6] transition-colors p-1.5 rounded-full hover:bg-white/10"
+        onClick={(e) => { e.stopPropagation(); onFullscreen(); }}
+        className="text-white hover:text-[#6D5DF6] transition-colors p-2.5 md:p-1.5 rounded-full hover:bg-white/10 cursor-pointer flex items-center justify-center min-w-[40px] min-h-[40px] md:min-w-0 md:min-h-0"
         aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
         title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}
       >
         {isFullscreen
-          ? <FiMinimize style={{ fontSize: '20px' }} />
-          : <FiMaximize style={{ fontSize: '20px' }} />
+          ? <FiMinimize className="text-xl md:text-lg" />
+          : <FiMaximize className="text-xl md:text-lg" />
         }
       </button>
     </div>
@@ -361,11 +361,46 @@ export const VideoPlayer: React.FC = () => {
   }, [isPlaying, setIsPlaying]);
 
   const handleFullscreen = useCallback(async () => {
-    if (!document.fullscreenElement) {
-      // Request fullscreen on the entire document — true F11-style like YouTube
-      await document.documentElement.requestFullscreen();
-    } else {
-      await document.exitFullscreen();
+    try {
+      const container = containerRef.current || document.documentElement;
+      const video = videoRef.current;
+
+      const isFs = !!document.fullscreenElement || !!(video && (video as any).webkitDisplayingFullscreen);
+
+      if (!isFs) {
+        if (container.requestFullscreen) {
+          await container.requestFullscreen();
+        } else if ((container as any).webkitRequestFullscreen) {
+          await (container as any).webkitRequestFullscreen();
+        } else if (video && (video as any).webkitEnterFullscreen) {
+          (video as any).webkitEnterFullscreen();
+        }
+
+        // On mobile screens (< 768px), request landscape orientation lock
+        if (window.innerWidth < 768 && screen.orientation && 'lock' in screen.orientation) {
+          try {
+            await (screen.orientation as any).lock('landscape');
+          } catch {
+            /* Orientation lock silently bypassed if unpermitted */
+          }
+        }
+      } else {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if ((document as any).webkitExitFullscreen) {
+          await (document as any).webkitExitFullscreen();
+        }
+
+        if (screen.orientation && 'unlock' in screen.orientation) {
+          try {
+            screen.orientation.unlock();
+          } catch {
+            /* Swallow */
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('Fullscreen action:', err);
     }
   }, []);
 

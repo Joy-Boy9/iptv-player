@@ -537,9 +537,10 @@ export const ChannelList: React.FC = () => {
             overflowY: 'auto',
             overflowX: 'hidden',
             padding: '3px 5px',
-            contain: 'strict',
-            willChange: 'transform',
+            touchAction: 'pan-y',
             WebkitOverflowScrolling: 'touch',
+            contain: 'content',
+            willChange: 'transform',
           }}
         >
           <div
