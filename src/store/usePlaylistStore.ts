@@ -12,18 +12,42 @@ function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2);
 }
 
-const DEFAULT_PLAYLIST: Playlist = {
-  id: 'default-all',
-  name: 'All Channels (13,000+)',
-  url: 'https://iptv-org.github.io/iptv/index.m3u',
-  type: 'url',
-  enabled: true,
-  color: '#6D5DF6',
-  icon: '🌍',
-  lastUpdated: 0,
-  channelCount: 0,
-};
-
+// Three built-in playlists — Telugu enabled by default, others off
+const DEFAULT_PLAYLISTS: Playlist[] = [
+  {
+    id: 'default-tel',
+    name: 'Telugu',
+    url: 'https://iptv-org.github.io/iptv/languages/tel.m3u',
+    type: 'url',
+    enabled: true,       // ← ON by default
+    color: '#F59E0B',
+    icon: '🇮🇳',
+    lastUpdated: 0,
+    channelCount: 0,
+  },
+  {
+    id: 'default-hin',
+    name: 'Hindi',
+    url: 'https://iptv-org.github.io/iptv/languages/hin.m3u',
+    type: 'url',
+    enabled: false,      // ← OFF — user can enable
+    color: '#10B981',
+    icon: '🇮🇳',
+    lastUpdated: 0,
+    channelCount: 0,
+  },
+  {
+    id: 'default-all',
+    name: 'All Channels (13,000+)',
+    url: 'https://iptv-org.github.io/iptv/index.m3u',
+    type: 'url',
+    enabled: false,      // ← OFF — user can enable
+    color: '#6D5DF6',
+    icon: '🌍',
+    lastUpdated: 0,
+    channelCount: 0,
+  },
+];
 
 interface PlaylistStore {
   playlists: Playlist[];
@@ -48,7 +72,7 @@ interface PlaylistStore {
 }
 
 export const usePlaylistStore = create<PlaylistStore>((set, get) => ({
-  playlists: storage.get<Playlist[]>('playlists', [DEFAULT_PLAYLIST]),
+  playlists: storage.get<Playlist[]>('playlists', DEFAULT_PLAYLISTS),
   channels: storage.get<Channel[]>('channels', []),
   isLoading: false,
   loadingPlaylistId: null,
@@ -221,32 +245,23 @@ export const usePlaylistStore = create<PlaylistStore>((set, get) => ({
   },
 
   initializeDefaultPlaylist: async () => {
-    const { playlists, channels, refreshPlaylist } = get();
+    const { playlists, channels } = get();
+    const existingIds = new Set(playlists.map((p) => p.id));
 
-    // Migrate old default-tel to new default-all
-    const oldDefault = playlists.find((p) => p.id === 'default-tel');
-    if (oldDefault) {
-      const updatedPlaylists = playlists.map((p) =>
-        p.id === 'default-tel' ? { ...DEFAULT_PLAYLIST } : p
-      );
-      const updatedChannels = channels.filter((c) => c.playlistId !== 'default-tel');
-      storage.set('playlists', updatedPlaylists);
-      storage.set('channels', updatedChannels);
-      set({ playlists: updatedPlaylists, channels: updatedChannels });
-      await get().refreshPlaylist('default-all');
-      return;
+    // Ensure all 3 default playlists exist (add any missing ones)
+    const missing = DEFAULT_PLAYLISTS.filter((d) => !existingIds.has(d.id));
+    if (missing.length > 0) {
+      const merged = [...playlists, ...missing];
+      storage.set('playlists', merged);
+      set({ playlists: merged });
     }
 
-    const defaultPlaylist = playlists.find((p) => p.id === 'default-all');
-    if (!defaultPlaylist) {
-      // Fresh install — add default playlist
-      set((state) => ({
-        playlists: [DEFAULT_PLAYLIST, ...state.playlists],
-      }));
-      await get().refreshPlaylist('default-all');
-    } else if (channels.filter((c) => c.playlistId === 'default-all').length === 0) {
-      // Channels not loaded yet, fetch them
-      await refreshPlaylist('default-all');
+    // Only fetch channels for ENABLED playlists that have no channels yet
+    const currentPlaylists = get().playlists;
+    for (const pl of currentPlaylists) {
+      if (pl.enabled && channels.filter((c) => c.playlistId === pl.id).length === 0) {
+        await get().refreshPlaylist(pl.id);
+      }
     }
   },
 
