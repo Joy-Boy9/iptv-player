@@ -13,16 +13,17 @@ function generateId(): string {
 }
 
 const DEFAULT_PLAYLIST: Playlist = {
-  id: 'default-tel',
-  name: 'Telugu (Default)',
-  url: 'https://iptv-org.github.io/iptv/languages/tel.m3u',
+  id: 'default-all',
+  name: 'All Channels (13,000+)',
+  url: 'https://iptv-org.github.io/iptv/index.m3u',
   type: 'url',
   enabled: true,
   color: '#6D5DF6',
-  icon: '📺',
+  icon: '🌍',
   lastUpdated: 0,
   channelCount: 0,
 };
+
 
 interface PlaylistStore {
   playlists: Playlist[];
@@ -221,19 +222,34 @@ export const usePlaylistStore = create<PlaylistStore>((set, get) => ({
 
   initializeDefaultPlaylist: async () => {
     const { playlists, channels, refreshPlaylist } = get();
-    const defaultPlaylist = playlists.find((p) => p.id === 'default-tel');
 
+    // Migrate old default-tel to new default-all
+    const oldDefault = playlists.find((p) => p.id === 'default-tel');
+    if (oldDefault) {
+      const updatedPlaylists = playlists.map((p) =>
+        p.id === 'default-tel' ? { ...DEFAULT_PLAYLIST } : p
+      );
+      const updatedChannels = channels.filter((c) => c.playlistId !== 'default-tel');
+      storage.set('playlists', updatedPlaylists);
+      storage.set('channels', updatedChannels);
+      set({ playlists: updatedPlaylists, channels: updatedChannels });
+      await get().refreshPlaylist('default-all');
+      return;
+    }
+
+    const defaultPlaylist = playlists.find((p) => p.id === 'default-all');
     if (!defaultPlaylist) {
-      // Add default playlist
+      // Fresh install — add default playlist
       set((state) => ({
         playlists: [DEFAULT_PLAYLIST, ...state.playlists],
       }));
-      await get().refreshPlaylist('default-tel');
-    } else if (channels.filter((c) => c.playlistId === 'default-tel').length === 0) {
+      await get().refreshPlaylist('default-all');
+    } else if (channels.filter((c) => c.playlistId === 'default-all').length === 0) {
       // Channels not loaded yet, fetch them
-      await refreshPlaylist('default-tel');
+      await refreshPlaylist('default-all');
     }
   },
+
 
   getAllChannels: () => {
     const { channels, playlists } = get();
