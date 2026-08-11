@@ -275,7 +275,10 @@ export const ChannelList: React.FC = () => {
     let list = allEnabledChannels;
 
     if (selectedPlaylistFilter) {
-      list = list.filter((c) => c.playlistId === selectedPlaylistFilter);
+      const isFilterEnabled = playlists.some((p) => p.id === selectedPlaylistFilter && p.enabled);
+      if (isFilterEnabled) {
+        list = list.filter((c) => c.playlistId === selectedPlaylistFilter);
+      }
     }
 
     if (selectedCategory === 'favorites') {

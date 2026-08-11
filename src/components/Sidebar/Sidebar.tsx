@@ -59,7 +59,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddPlaylist, onImportFile })
     selectedCategory,
     setSelectedCategory,
     selectedPlaylistFilter,
-    setSelectedPlaylistFilter,
     isSidebarOpen,
     setSidebarOpen,
     setSettingsOpen,
@@ -75,13 +74,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddPlaylist, onImportFile })
   // Close mobile drawer when an option is selected on small screens
   const handleSelectCategory = (catId: string) => {
     setSelectedCategory(catId);
-    if (window.innerWidth < 768) {
-      setSidebarOpen(false);
-    }
-  };
-
-  const handleSelectFilter = (plId: string) => {
-    setSelectedPlaylistFilter(selectedPlaylistFilter === plId ? null : plId);
     if (window.innerWidth < 768) {
       setSidebarOpen(false);
     }
@@ -245,15 +237,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddPlaylist, onImportFile })
                 {playlists.map((pl) => (
                   <div
                     key={pl.id}
-                    onClick={() => handleSelectFilter(pl.id)}
+                    onClick={() => togglePlaylist(pl.id)}
                     className={`flex items-center gap-2 p-1.5 rounded-lg cursor-pointer transition-colors ${
-                      selectedPlaylistFilter === pl.id ? 'bg-[#6D5DF6]/15' : 'hover:bg-[#1A2140]'
+                      pl.enabled ? 'bg-[#6D5DF6]/15 text-white' : 'hover:bg-[#1A2140] text-[#B8C1EC]'
                     }`}
                   >
                     {/* Checkbox */}
-                    <button
-                      onClick={(e) => { e.stopPropagation(); togglePlaylist(pl.id); }}
-                      className={`w-3.5 h-3.5 rounded flex-shrink-0 border cursor-pointer flex items-center justify-center ${
+                    <div
+                      className={`w-3.5 h-3.5 rounded flex-shrink-0 border flex items-center justify-center transition-colors ${
                         pl.enabled ? 'bg-[#6D5DF6] border-[#6D5DF6]' : 'border-[#4B5563] bg-transparent'
                       }`}
                     >
@@ -262,14 +253,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddPlaylist, onImportFile })
                           <path d="M1 3L3 5L7 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                       )}
-                    </button>
-                    <span className="text-xs text-[#B8C1EC] flex-1 truncate">{pl.name}</span>
+                    </div>
+                    <span className="text-xs flex-1 truncate">{pl.name}</span>
                     {isLoading && loadingPlaylistId === pl.id ? (
                       <FiRefreshCw className="text-xs text-[#6D5DF6] animate-spin flex-shrink-0" />
                     ) : pl.type === 'url' ? (
                       <button
                         onClick={(e) => { e.stopPropagation(); refreshPlaylist(pl.id); }}
                         className="text-[#4B5563] hover:text-[#B8C1EC] p-0.5 flex-shrink-0"
+                        title="Refresh playlist"
                       >
                         <FiRefreshCw className="text-xs" />
                       </button>
