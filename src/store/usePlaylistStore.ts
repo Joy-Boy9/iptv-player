@@ -248,7 +248,32 @@ export const usePlaylistStore = create<PlaylistStore>((set, get) => ({
     const { playlists, channels } = get();
     const existingIds = new Set(playlists.map((p) => p.id));
 
-    // Ensure all 3 default playlists exist (add any missing ones)
+    // ── Migration: fix old state where default-all was the only enabled default ──
+    // If user had the previous version (default-all ON, no default-tel),
+    // reset everything to the correct 3-playlist defaults.
+    const hasTel = existingIds.has('default-tel');
+    const hasAll = existingIds.has('default-all');
+    const allEnabled = playlists.find((p) => p.id === 'default-all')?.enabled;
+
+    if (!hasTel && hasAll && allEnabled) {
+      // Old state detected → reset to clean DEFAULT_PLAYLISTS
+      // Keep any user-added playlists, replace only the defaults
+      const userPlaylists = playlists.filter(
+        (p) => !['default-tel', 'default-hin', 'default-all'].includes(p.id)
+      );
+      const resetChannels = channels.filter(
+        (c) => !['default-tel', 'default-hin', 'default-all'].includes(c.playlistId)
+      );
+      const merged = [...DEFAULT_PLAYLISTS, ...userPlaylists];
+      storage.set('playlists', merged);
+      storage.set('channels', resetChannels);
+      set({ playlists: merged, channels: resetChannels });
+      // Only fetch Telugu (the only enabled one)
+      await get().refreshPlaylist('default-tel');
+      return;
+    }
+
+    // ── Ensure all 3 default playlists exist (add any missing ones) ──
     const missing = DEFAULT_PLAYLISTS.filter((d) => !existingIds.has(d.id));
     if (missing.length > 0) {
       const merged = [...playlists, ...missing];
@@ -256,7 +281,7 @@ export const usePlaylistStore = create<PlaylistStore>((set, get) => ({
       set({ playlists: merged });
     }
 
-    // Only fetch channels for ENABLED playlists that have no channels yet
+    // ── Only fetch channels for ENABLED playlists that have no channels yet ──
     const currentPlaylists = get().playlists;
     for (const pl of currentPlaylists) {
       if (pl.enabled && channels.filter((c) => c.playlistId === pl.id).length === 0) {
@@ -264,6 +289,7 @@ export const usePlaylistStore = create<PlaylistStore>((set, get) => ({
       }
     }
   },
+
 
 
   getAllChannels: () => {
