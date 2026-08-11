@@ -382,17 +382,17 @@ export const ChannelList: React.FC = () => {
 
   return (
     <div className="w-full md:w-[320px] flex-shrink-0 bg-[#0B1020] border-b md:border-b-0 md:border-r border-[#1E2A4A] flex flex-col overflow-hidden h-full min-h-0">
-      {/* Clean Compact Header - No extra buttons */}
+      {/* Clean Compact Header Strip - No extra arrow or dot buttons */}
       <div
         style={{
-          padding: '6px 12px',
+          padding: '4px 10px',
           borderBottom: '1px solid #1E2A4A',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           background: '#0D1428',
           flexShrink: 0,
-          height: '34px',
+          height: '32px',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
@@ -434,7 +434,7 @@ export const ChannelList: React.FC = () => {
         )}
       </div>
 
-      {/* Sleek Relocated Search Input */}
+      {/* Sleek Compact Relocated Search Input */}
       <div style={{ padding: '4px 8px', borderBottom: '1px solid #1E2A4A', background: '#0B1020', flexShrink: 0 }}>
         <div style={{ position: 'relative' }}>
           <FiSearch

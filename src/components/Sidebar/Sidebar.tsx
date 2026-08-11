@@ -16,6 +16,7 @@ import {
   FiChevronRight,
   FiX,
   FiTv,
+  FiSettings,
 } from 'react-icons/fi';
 import {
   MdLiveTv,
@@ -61,6 +62,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddPlaylist, onImportFile })
     setSelectedPlaylistFilter,
     isSidebarOpen,
     setSidebarOpen,
+    setSettingsOpen,
   } = useUIStore();
 
   const { playlists, channels, togglePlaylist, refreshPlaylist, isLoading, loadingPlaylistId } = usePlaylistStore();
@@ -214,7 +216,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddPlaylist, onImportFile })
         )}
       </div>
 
-      {/* Bottom — Playlists */}
+      {/* Bottom — Playlists & Quick Actions */}
       <div className="border-t border-[#1E2A4A]">
         <button
           onClick={() => setShowPlaylists(!showPlaylists)}
@@ -270,16 +272,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddPlaylist, onImportFile })
                 ))}
               </div>
 
-              {/* Add / Import */}
-              <div className="flex gap-1.5 p-2 pt-1">
+              {/* Add / Import / Settings Row */}
+              <div className="flex gap-1 p-2 pt-1">
                 {[
                   { label: 'Add', icon: <FiPlusCircle className="text-xs" />, onClick: onAddPlaylist },
                   { label: 'Import', icon: <FiUpload className="text-xs" />, onClick: onImportFile },
+                  { label: 'Settings', icon: <FiSettings className="text-xs" />, onClick: () => setSettingsOpen(true) },
                 ].map((btn) => (
                   <button
                     key={btn.label}
                     onClick={btn.onClick}
-                    className="flex-1 flex items-center justify-center gap-1 py-1 bg-[#1A2140] hover:bg-[#2C3766] border border-[#1E2A4A] rounded-lg text-[#B8C1EC] hover:text-white text-xs transition-colors"
+                    className="flex-1 flex items-center justify-center gap-1 py-1 bg-[#1A2140] hover:bg-[#2C3766] border border-[#1E2A4A] rounded-lg text-[#B8C1EC] hover:text-white text-[11px] transition-colors"
                   >
                     {btn.icon}
                     {btn.label}
@@ -292,8 +295,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddPlaylist, onImportFile })
       </div>
 
       {/* Total channels footer */}
-      <div className="p-2.5 border-t border-[#1E2A4A]">
-        <p className="text-[#6B7280] text-xs">
+      <div className="p-2 border-t border-[#1E2A4A]">
+        <p className="text-[#6B7280] text-[11px]">
           Total: <span className="text-[#6D5DF6] font-bold">{allChannels.length}</span> channels
         </p>
       </div>
@@ -302,10 +305,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddPlaylist, onImportFile })
 
   return (
     <>
-      {/* Desktop Sidebar (hidden on mobile) */}
-      <div className="hidden md:flex h-full flex-shrink-0">
-        {sidebarContent}
-      </div>
+      {/* Desktop Sidebar — responds to isSidebarOpen state */}
+      {isSidebarOpen && (
+        <div className="hidden md:flex h-full flex-shrink-0">
+          {sidebarContent}
+        </div>
+      )}
 
       {/* Mobile Drawer Sidebar */}
       <AnimatePresence>
