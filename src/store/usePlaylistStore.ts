@@ -71,7 +71,7 @@ interface PlaylistStore {
   addPlaylist: (playlist: Omit<Playlist, 'id' | 'lastUpdated' | 'channelCount'>) => Promise<void>;
   addPlaylistFromFile: (name: string, content: string) => Promise<void>;
   removePlaylist: (id: string) => void;
-  togglePlaylist: (id: string) => void;
+  togglePlaylist: (id: string) => Promise<void>;
   renamePlaylist: (id: string, name: string) => void;
   refreshPlaylist: (id: string) => Promise<void>;
   refreshAllPlaylists: () => Promise<void>;
@@ -183,14 +183,28 @@ export const usePlaylistStore = create<PlaylistStore>((set, get) => ({
     });
   },
 
-  togglePlaylist: (id) => {
+  togglePlaylist: async (id) => {
+    const { playlists, channels, refreshPlaylist } = get();
+    const playlist = playlists.find((p) => p.id === id);
+    if (!playlist) return;
+
+    const willBeEnabled = !playlist.enabled;
+
     set((state) => {
       const updatedPlaylists = state.playlists.map((p) =>
-        p.id === id ? { ...p, enabled: !p.enabled } : p
+        p.id === id ? { ...p, enabled: willBeEnabled } : p
       );
       storage.set('playlists', updatedPlaylists);
       return { playlists: updatedPlaylists };
     });
+
+    // If user checks a playlist tick mark and its channels aren't loaded yet, auto-fetch in background
+    if (willBeEnabled && playlist.type === 'url') {
+      const hasChannels = channels.some((c) => c.playlistId === id);
+      if (!hasChannels) {
+        await refreshPlaylist(id);
+      }
+    }
   },
 
   renamePlaylist: (id, name) => {
