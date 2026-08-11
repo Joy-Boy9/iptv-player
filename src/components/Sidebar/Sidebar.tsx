@@ -17,7 +17,6 @@ import {
   FiX,
   FiTv,
   FiSettings,
-  FiList,
 } from 'react-icons/fi';
 import {
   MdLiveTv,
@@ -64,7 +63,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddPlaylist, onImportFile })
     isSidebarOpen,
     setSidebarOpen,
     setSettingsOpen,
-    setPlaylistManagerOpen,
   } = useUIStore();
 
   const { playlists, channels, togglePlaylist, refreshPlaylist, isLoading, loadingPlaylistId } = usePlaylistStore();
@@ -280,29 +278,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddPlaylist, onImportFile })
                 ))}
               </div>
 
-              {/* Add / Import / Playlists / Settings Row */}
-              <div className="grid grid-cols-2 gap-1 p-2 pt-1">
+              {/* Clean 3-Button Action Row: Add, Import, Settings */}
+              <div className="flex gap-1.5 p-2 pt-1">
                 <button
                   onClick={onAddPlaylist}
-                  className="flex items-center justify-center gap-1 py-1 bg-[#1A2140] hover:bg-[#2C3766] border border-[#1E2A4A] rounded-lg text-[#B8C1EC] hover:text-white text-[11px] transition-colors"
+                  className="flex-1 flex items-center justify-center gap-1 py-1.5 bg-[#1A2140] hover:bg-[#2C3766] border border-[#1E2A4A] rounded-lg text-[#B8C1EC] hover:text-white text-xs transition-colors"
                 >
                   <FiPlusCircle className="text-xs" /> Add
                 </button>
                 <button
                   onClick={onImportFile}
-                  className="flex items-center justify-center gap-1 py-1 bg-[#1A2140] hover:bg-[#2C3766] border border-[#1E2A4A] rounded-lg text-[#B8C1EC] hover:text-white text-[11px] transition-colors"
+                  className="flex-1 flex items-center justify-center gap-1 py-1.5 bg-[#1A2140] hover:bg-[#2C3766] border border-[#1E2A4A] rounded-lg text-[#B8C1EC] hover:text-white text-xs transition-colors"
                 >
                   <FiUpload className="text-xs" /> Import
                 </button>
                 <button
-                  onClick={() => setPlaylistManagerOpen(true)}
-                  className="flex items-center justify-center gap-1 py-1 bg-[#1A2140] hover:bg-[#2C3766] border border-[#1E2A4A] rounded-lg text-[#B8C1EC] hover:text-white text-[11px] transition-colors"
-                >
-                  <FiList className="text-xs" /> Manager
-                </button>
-                <button
                   onClick={() => setSettingsOpen(true)}
-                  className="flex items-center justify-center gap-1 py-1 bg-[#1A2140] hover:bg-[#2C3766] border border-[#1E2A4A] rounded-lg text-[#B8C1EC] hover:text-white text-[11px] transition-colors"
+                  className="flex-1 flex items-center justify-center gap-1 py-1.5 bg-[#1A2140] hover:bg-[#2C3766] border border-[#1E2A4A] rounded-lg text-[#B8C1EC] hover:text-white text-xs transition-colors"
                 >
                   <FiSettings className="text-xs" /> Settings
                 </button>
