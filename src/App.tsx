@@ -1,10 +1,9 @@
 // =============================================
-// Main App Component — Ultra-Smooth & Responsive
+// Main App Component — Maximum Viewport Layout
 // =============================================
 
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Header } from './components/Header/Header';
 import { Sidebar } from './components/Sidebar/Sidebar';
 import { ChannelList } from './components/ChannelList/ChannelList';
 import { VideoPlayer } from './components/Player/VideoPlayer';
@@ -67,31 +66,13 @@ function App() {
     init();
   }, []);
 
-  // Handle keyboard shortcut Ctrl+F for search
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
-        e.preventDefault();
-        const searchInput = document.getElementById('header-search') as HTMLInputElement;
-        if (searchInput) searchInput.focus();
-      }
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, []);
-
   const showLoading = !appInitialized;
 
   return (
     <div className="h-screen w-screen flex flex-col bg-[#0B1020] overflow-hidden select-none">
       <LoadingOverlay isLoading={showLoading} />
 
-      {/* Top Header Bar */}
-      <Header />
-
-      {/* Main Content Area */}
-      {/* Desktop (md:): Sidebar (220px) | ChannelList (320px) | VideoPlayer (flex-1) */}
-      {/* Mobile (<md): VideoPlayer top | ChannelList bottom */}
+      {/* Main Content Area (No top header bar) */}
       <main className="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0">
         {/* Left Sidebar / Mobile Drawer */}
         <Sidebar
@@ -100,7 +81,7 @@ function App() {
         />
 
         {/* Mobile View: VideoPlayer on top, ChannelList on bottom */}
-        {/* Desktop View: ChannelList left, VideoPlayer right */}
+        {/* Desktop View: ChannelList left (320px), VideoPlayer right (flex-1) */}
         <div className="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0 min-w-0">
           <div className="order-2 md:order-1 w-full md:w-[320px] md:flex-shrink-0 flex flex-col flex-1 md:flex-initial min-h-0 overflow-hidden">
             <ChannelList />

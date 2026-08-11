@@ -5,7 +5,7 @@
 import React, { useMemo, useRef, useEffect, useCallback } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { motion } from 'framer-motion';
-import { FiHeart, FiTv, FiSearch, FiX } from 'react-icons/fi';
+import { FiHeart, FiTv, FiSearch, FiX, FiMenu } from 'react-icons/fi';
 import { useUIStore } from '../../store/useUIStore';
 import { usePlaylistStore } from '../../store/usePlaylistStore';
 import { useFavoritesStore } from '../../store/useFavoritesStore';
@@ -253,6 +253,8 @@ export const ChannelList: React.FC = () => {
     selectedPlaylistFilter,
     setSelectedChannelIndex,
     selectedChannelIndex,
+    isSidebarOpen,
+    toggleSidebar,
   } = useUIStore();
 
   const { channels, playlists, isLoading } = usePlaylistStore();
@@ -382,7 +384,7 @@ export const ChannelList: React.FC = () => {
 
   return (
     <div className="w-full md:w-[320px] flex-shrink-0 bg-[#0B1020] border-b md:border-b-0 md:border-r border-[#1E2A4A] flex flex-col overflow-hidden h-full min-h-0">
-      {/* Clean Compact Header Strip - No extra arrow or dot buttons */}
+      {/* Clean Compact Header Strip with Three-Lines Menu Button */}
       <div
         style={{
           padding: '4px 10px',
@@ -392,10 +394,31 @@ export const ChannelList: React.FC = () => {
           justifyContent: 'space-between',
           background: '#0D1428',
           flexShrink: 0,
-          height: '32px',
+          height: '34px',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
+          {/* Three Lines Menu Button beside channel count */}
+          <button
+            onClick={toggleSidebar}
+            title={isSidebarOpen ? "Hide Categories" : "Show Categories"}
+            style={{
+              background: '#1A2140',
+              border: '1px solid #1E2A4A',
+              color: '#B8C1EC',
+              cursor: 'pointer',
+              padding: '4px',
+              borderRadius: '6px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '24px',
+              height: '24px',
+              flexShrink: 0,
+            }}
+          >
+            <FiMenu style={{ fontSize: '13px', color: '#B8C1EC' }} />
+          </button>
           <FiTv style={{ color: '#6D5DF6', fontSize: '13px', flexShrink: 0 }} />
           <span style={{ color: '#FFFFFF', fontSize: '12px', fontWeight: 600 }}>
             {filteredChannels.length} <span style={{ color: '#6B7280', fontWeight: 400 }}>channels</span>
@@ -409,7 +432,7 @@ export const ChannelList: React.FC = () => {
                 borderRadius: '4px',
                 background: 'rgba(109,93,246,0.2)',
                 color: '#8B7DF8',
-                maxWidth: '100px',
+                maxWidth: '90px',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',

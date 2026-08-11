@@ -1,5 +1,5 @@
 // =============================================
-// Sidebar — Responsive Sidebar & Mobile Drawer
+// Sidebar — Responsive Sidebar & Category Drawer
 // =============================================
 
 import React, { useState, useMemo } from 'react';
@@ -17,6 +17,7 @@ import {
   FiX,
   FiTv,
   FiSettings,
+  FiList,
 } from 'react-icons/fi';
 import {
   MdLiveTv,
@@ -63,6 +64,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddPlaylist, onImportFile })
     isSidebarOpen,
     setSidebarOpen,
     setSettingsOpen,
+    setPlaylistManagerOpen,
   } = useUIStore();
 
   const { playlists, channels, togglePlaylist, refreshPlaylist, isLoading, loadingPlaylistId } = usePlaylistStore();
@@ -125,21 +127,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddPlaylist, onImportFile })
 
   const sidebarContent = (
     <aside className="w-[260px] md:w-[220px] bg-[#12192E] border-r border-[#1E2A4A] flex flex-col h-full overflow-hidden flex-shrink-0 z-50">
-      {/* Mobile Drawer Header */}
-      <div className="flex md:hidden items-center justify-between p-3 border-b border-[#1E2A4A]">
-        <div className="flex items-center gap-2">
-          <FiTv className="text-[#6D5DF6]" />
-          <span className="text-white font-bold text-sm">Categories & Playlists</span>
+      {/* Brand Header inside Sidebar */}
+      <div className="flex items-center justify-between px-3 py-2 border-b border-[#1E2A4A] bg-[#0D1428]">
+        <div className="flex items-center gap-2 select-none">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#6D5DF6] to-[#8B7DF8] flex items-center justify-center shadow-md shadow-[#6D5DF6]/30">
+            <FiTv className="text-white text-xs" />
+          </div>
+          <span className="text-white font-extrabold text-xs tracking-wide">
+            IPTV <span className="text-[#6D5DF6]">PLAYER</span>
+          </span>
         </div>
+
+        {/* Mobile close button */}
         <button
           onClick={() => setSidebarOpen(false)}
-          className="p-1 text-[#B8C1EC] hover:text-white rounded-lg bg-[#1A2140]"
+          className="md:hidden p-1 text-[#B8C1EC] hover:text-white rounded-lg bg-[#1A2140]"
         >
-          <FiX className="text-base" />
+          <FiX className="text-sm" />
         </button>
       </div>
 
-      {/* Category Search + Quick Actions */}
+      {/* Category Search */}
       <div className="p-2 border-b border-[#1E2A4A] flex gap-1.5 items-center">
         <div className="relative flex-1">
           <FiSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#6B7280] text-xs pointer-events-none" />
@@ -216,7 +224,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddPlaylist, onImportFile })
         )}
       </div>
 
-      {/* Bottom — Playlists & Quick Actions */}
+      {/* Bottom — Playlists & Action Buttons */}
       <div className="border-t border-[#1E2A4A]">
         <button
           onClick={() => setShowPlaylists(!showPlaylists)}
@@ -272,22 +280,32 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddPlaylist, onImportFile })
                 ))}
               </div>
 
-              {/* Add / Import / Settings Row */}
-              <div className="flex gap-1 p-2 pt-1">
-                {[
-                  { label: 'Add', icon: <FiPlusCircle className="text-xs" />, onClick: onAddPlaylist },
-                  { label: 'Import', icon: <FiUpload className="text-xs" />, onClick: onImportFile },
-                  { label: 'Settings', icon: <FiSettings className="text-xs" />, onClick: () => setSettingsOpen(true) },
-                ].map((btn) => (
-                  <button
-                    key={btn.label}
-                    onClick={btn.onClick}
-                    className="flex-1 flex items-center justify-center gap-1 py-1 bg-[#1A2140] hover:bg-[#2C3766] border border-[#1E2A4A] rounded-lg text-[#B8C1EC] hover:text-white text-[11px] transition-colors"
-                  >
-                    {btn.icon}
-                    {btn.label}
-                  </button>
-                ))}
+              {/* Add / Import / Playlists / Settings Row */}
+              <div className="grid grid-cols-2 gap-1 p-2 pt-1">
+                <button
+                  onClick={onAddPlaylist}
+                  className="flex items-center justify-center gap-1 py-1 bg-[#1A2140] hover:bg-[#2C3766] border border-[#1E2A4A] rounded-lg text-[#B8C1EC] hover:text-white text-[11px] transition-colors"
+                >
+                  <FiPlusCircle className="text-xs" /> Add
+                </button>
+                <button
+                  onClick={onImportFile}
+                  className="flex items-center justify-center gap-1 py-1 bg-[#1A2140] hover:bg-[#2C3766] border border-[#1E2A4A] rounded-lg text-[#B8C1EC] hover:text-white text-[11px] transition-colors"
+                >
+                  <FiUpload className="text-xs" /> Import
+                </button>
+                <button
+                  onClick={() => setPlaylistManagerOpen(true)}
+                  className="flex items-center justify-center gap-1 py-1 bg-[#1A2140] hover:bg-[#2C3766] border border-[#1E2A4A] rounded-lg text-[#B8C1EC] hover:text-white text-[11px] transition-colors"
+                >
+                  <FiList className="text-xs" /> Manager
+                </button>
+                <button
+                  onClick={() => setSettingsOpen(true)}
+                  className="flex items-center justify-center gap-1 py-1 bg-[#1A2140] hover:bg-[#2C3766] border border-[#1E2A4A] rounded-lg text-[#B8C1EC] hover:text-white text-[11px] transition-colors"
+                >
+                  <FiSettings className="text-xs" /> Settings
+                </button>
               </div>
             </motion.div>
           )}
