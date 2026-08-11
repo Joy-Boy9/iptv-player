@@ -1,5 +1,5 @@
 // =============================================
-// Sidebar — improved design, full category names
+// Sidebar — Responsive Sidebar & Mobile Drawer
 // =============================================
 
 import React, { useState, useMemo } from 'react';
@@ -14,8 +14,8 @@ import {
   FiUpload,
   FiChevronDown,
   FiChevronRight,
-  FiSettings,
-  FiList,
+  FiX,
+  FiTv,
 } from 'react-icons/fi';
 import {
   MdLiveTv,
@@ -54,13 +54,36 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ onAddPlaylist, onImportFile }) => {
-  const { selectedCategory, setSelectedCategory, selectedPlaylistFilter, setSelectedPlaylistFilter, setSettingsOpen, setPlaylistManagerOpen } = useUIStore();
+  const {
+    selectedCategory,
+    setSelectedCategory,
+    selectedPlaylistFilter,
+    setSelectedPlaylistFilter,
+    isSidebarOpen,
+    setSidebarOpen,
+  } = useUIStore();
+
   const { playlists, channels, togglePlaylist, refreshPlaylist, isLoading, loadingPlaylistId } = usePlaylistStore();
   const { favoriteIds } = useFavoritesStore();
   const { recentChannels } = useRecentStore();
 
   const [categorySearch, setCategorySearch] = useState('');
   const [showPlaylists, setShowPlaylists] = useState(true);
+
+  // Close mobile drawer when an option is selected on small screens
+  const handleSelectCategory = (catId: string) => {
+    setSelectedCategory(catId);
+    if (window.innerWidth < 768) {
+      setSidebarOpen(false);
+    }
+  };
+
+  const handleSelectFilter = (plId: string) => {
+    setSelectedPlaylistFilter(selectedPlaylistFilter === plId ? null : plId);
+    if (window.innerWidth < 768) {
+      setSidebarOpen(false);
+    }
+  };
 
   // Reactive channel counts
   const allChannels = useMemo(() => {
@@ -98,144 +121,56 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddPlaylist, onImportFile })
 
   const isActive = (id: string) => selectedCategory === id;
 
-  return (
-    <aside
-      style={{
-        width: '185px',
-        flexShrink: 0,
-        background: '#12192E',
-        borderRight: '1px solid #1E2A4A',
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        overflow: 'hidden',
-      }}
-    >
+  const sidebarContent = (
+    <aside className="w-[260px] md:w-[220px] bg-[#12192E] border-r border-[#1E2A4A] flex flex-col h-full overflow-hidden flex-shrink-0 z-50">
+      {/* Mobile Drawer Header */}
+      <div className="flex md:hidden items-center justify-between p-3 border-b border-[#1E2A4A]">
+        <div className="flex items-center gap-2">
+          <FiTv className="text-[#6D5DF6]" />
+          <span className="text-white font-bold text-sm">Categories & Playlists</span>
+        </div>
+        <button
+          onClick={() => setSidebarOpen(false)}
+          className="p-1 text-[#B8C1EC] hover:text-white rounded-lg bg-[#1A2140]"
+        >
+          <FiX className="text-base" />
+        </button>
+      </div>
+
       {/* Category Search + Quick Actions */}
-      <div style={{ padding: '8px 10px', borderBottom: '1px solid #1E2A4A', display: 'flex', gap: '6px', alignItems: 'center' }}>
-        <div style={{ position: 'relative', flex: 1 }}>
-          <FiSearch
-            style={{
-              position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)',
-              color: '#6B7280', fontSize: '11px', pointerEvents: 'none',
-            }}
-          />
+      <div className="p-2 border-b border-[#1E2A4A] flex gap-1.5 items-center">
+        <div className="relative flex-1">
+          <FiSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#6B7280] text-xs pointer-events-none" />
           <input
             type="text"
             placeholder="Category..."
             value={categorySearch}
             onChange={(e) => setCategorySearch(e.target.value)}
-            style={{
-              width: '100%',
-              background: '#1A2140',
-              border: '1px solid #1E2A4A',
-              borderRadius: '8px',
-              paddingLeft: '22px',
-              paddingRight: '6px',
-              paddingTop: '5px',
-              paddingBottom: '5px',
-              fontSize: '11.5px',
-              color: 'white',
-              outline: 'none',
-              boxSizing: 'border-box',
-            }}
-            onFocus={(e) => (e.target.style.borderColor = '#6D5DF6')}
-            onBlur={(e) => (e.target.style.borderColor = '#1E2A4A')}
+            className="w-full bg-[#1A2140] border border-[#1E2A4A] rounded-lg pl-7 pr-2 py-1.5 text-xs text-white outline-none focus:border-[#6D5DF6]"
           />
         </div>
-
-        {/* Playlist Manager */}
-        <button
-          onClick={() => setPlaylistManagerOpen(true)}
-          title="Playlist Manager"
-          style={{
-            background: '#1A2140',
-            border: '1px solid #1E2A4A',
-            borderRadius: '8px',
-            padding: '5px',
-            color: '#B8C1EC',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.15s',
-            flexShrink: 0,
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = '#2C3766'; e.currentTarget.style.color = 'white'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = '#1A2140'; e.currentTarget.style.color = '#B8C1EC'; }}
-        >
-          <FiList style={{ fontSize: '13px' }} />
-        </button>
-
-        {/* Settings */}
-        <button
-          onClick={() => setSettingsOpen(true)}
-          title="Settings"
-          style={{
-            background: '#1A2140',
-            border: '1px solid #1E2A4A',
-            borderRadius: '8px',
-            padding: '5px',
-            color: '#B8C1EC',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.15s',
-            flexShrink: 0,
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = '#2C3766'; e.currentTarget.style.color = 'white'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = '#1A2140'; e.currentTarget.style.color = '#B8C1EC'; }}
-        >
-          <FiSettings style={{ fontSize: '13px' }} />
-        </button>
       </div>
 
       {/* Scrollable Category List */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '6px 8px', display: 'flex', flexDirection: 'column', gap: '1px' }}>
-
+      <div className="flex-1 overflow-y-auto p-1.5 flex flex-col gap-0.5">
         {/* Main sections */}
         {sectionItems.map((item) => {
           const active = isActive(item.id);
           return (
             <button
               key={item.id}
-              onClick={() => setSelectedCategory(item.id)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '7px',
-                padding: '5px 8px',
-                borderRadius: '7px',
-                cursor: 'pointer',
-                border: 'none',
-                background: active ? 'rgba(109,93,246,0.18)' : 'transparent',
-                color: active ? '#FFFFFF' : '#B8C1EC',
-                width: '100%',
-                textAlign: 'left',
-                transition: 'background 0.15s, color 0.15s',
-              }}
-              onMouseEnter={(e) => !active && ((e.currentTarget as HTMLButtonElement).style.background = '#2C3766')}
-              onMouseLeave={(e) => !active && ((e.currentTarget as HTMLButtonElement).style.background = 'transparent')}
+              onClick={() => handleSelectCategory(item.id)}
+              className={`flex items-center gap-2 px-2.5 py-2 rounded-lg cursor-pointer transition-colors w-full text-left ${
+                active ? 'bg-[#6D5DF6]/20 text-white font-semibold' : 'text-[#B8C1EC] hover:bg-[#2C3766] hover:text-white'
+              }`}
             >
-              <span style={{ fontSize: '13px', flexShrink: 0, color: active ? '#6D5DF6' : 'inherit' }}>
+              <span className={`text-base flex-shrink-0 ${active ? 'text-[#6D5DF6]' : 'text-inherit'}`}>
                 {item.icon}
               </span>
-              <span style={{ fontSize: '11.5px', fontWeight: active ? 600 : 400, flex: 1, textAlign: 'left' }}>
-                {item.label}
-              </span>
-              <span
-                style={{
-                  fontSize: '9px',
-                  padding: '1px 4px',
-                  borderRadius: '4px',
-                  fontFamily: 'monospace',
-                  fontWeight: 700,
-                  background: active ? 'rgba(109,93,246,0.3)' : '#1A2140',
-                  color: active ? '#8B7DF8' : '#6B7280',
-                  flexShrink: 0,
-                }}
-              >
+              <span className="text-xs flex-1 truncate">{item.label}</span>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-bold flex-shrink-0 ${
+                active ? 'bg-[#6D5DF6]/30 text-[#8B7DF8]' : 'bg-[#1A2140] text-[#6B7280]'
+              }`}>
                 {item.count}
               </span>
             </button>
@@ -243,7 +178,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddPlaylist, onImportFile })
         })}
 
         {/* Divider */}
-        <div style={{ height: '1px', background: '#1E2A4A', margin: '6px 4px' }} />
+        <div className="h-px bg-[#1E2A4A] my-1.5 mx-1" />
 
         {/* Dynamic categories */}
         {filteredCategories.map((cat) => {
@@ -252,92 +187,41 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddPlaylist, onImportFile })
           const active = isActive(cat.name);
 
           return (
-            <motion.button
+            <button
               key={cat.name}
-              onClick={() => setSelectedCategory(cat.name)}
-              whileHover={{ x: active ? 0 : 2 }}
-              transition={{ duration: 0.1 }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '7px',
-                padding: '4px 8px',
-                borderRadius: '7px',
-                cursor: 'pointer',
-                border: 'none',
-                background: active ? 'rgba(109,93,246,0.18)' : 'transparent',
-                color: active ? '#FFFFFF' : '#B8C1EC',
-                width: '100%',
-                textAlign: 'left',
-              }}
-              onMouseEnter={(e) => !active && ((e.currentTarget as HTMLButtonElement).style.background = '#2C3766')}
-              onMouseLeave={(e) => !active && ((e.currentTarget as HTMLButtonElement).style.background = active ? 'rgba(109,93,246,0.18)' : 'transparent')}
+              onClick={() => handleSelectCategory(cat.name)}
+              className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors w-full text-left ${
+                active ? 'bg-[#6D5DF6]/20 text-white font-semibold' : 'text-[#B8C1EC] hover:bg-[#2C3766] hover:text-white'
+              }`}
             >
-              <span style={{ fontSize: '13px', flexShrink: 0, color: active ? '#6D5DF6' : '#6B7280' }}>
+              <span className={`text-sm flex-shrink-0 ${active ? 'text-[#6D5DF6]' : 'text-[#6B7280]'}`}>
                 {icon}
               </span>
-              {/* Full category name — no truncation */}
-              <span
-                style={{
-                  fontSize: '11.5px',
-                  fontWeight: active ? 600 : 400,
-                  flex: 1,
-                  textAlign: 'left',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }}
-              >
-                {cat.name}
-              </span>
-              <span
-                style={{
-                  fontSize: '9px',
-                  padding: '1px 4px',
-                  borderRadius: '4px',
-                  fontFamily: 'monospace',
-                  fontWeight: 700,
-                  background: active ? 'rgba(109,93,246,0.3)' : '#1A2140',
-                  color: active ? '#8B7DF8' : '#6B7280',
-                  flexShrink: 0,
-                }}
-              >
+              <span className="text-xs flex-1 truncate">{cat.name}</span>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-bold flex-shrink-0 ${
+                active ? 'bg-[#6D5DF6]/30 text-[#8B7DF8]' : 'bg-[#1A2140] text-[#6B7280]'
+              }`}>
                 {cat.count}
               </span>
-            </motion.button>
+            </button>
           );
         })}
 
         {filteredCategories.length === 0 && categorySearch && (
-          <p style={{ color: '#6B7280', fontSize: '12px', textAlign: 'center', padding: '16px 0' }}>
+          <p className="text-[#6B7280] text-xs text-center py-4">
             No categories found
           </p>
         )}
       </div>
 
       {/* Bottom — Playlists */}
-      <div style={{ borderTop: '1px solid #1E2A4A' }}>
+      <div className="border-t border-[#1E2A4A]">
         <button
           onClick={() => setShowPlaylists(!showPlaylists)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            width: '100%',
-            padding: '8px 12px',
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            color: '#B8C1EC',
-          }}
+          className="flex items-center justify-between w-full p-2 text-[#B8C1EC] hover:text-white text-left"
         >
-          <span style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            Playlists
-          </span>
-          {showPlaylists
-            ? <FiChevronDown style={{ fontSize: '13px' }} />
-            : <FiChevronRight style={{ fontSize: '13px' }} />
-          }
+          <span className="text-[10px] font-bold uppercase tracking-wider">Playlists</span>
+          {showPlaylists ? <FiChevronDown className="text-xs" /> : <FiChevronRight className="text-xs" />}
         </button>
 
         <AnimatePresence>
@@ -347,37 +231,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddPlaylist, onImportFile })
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              style={{ overflow: 'hidden' }}
+              className="overflow-hidden"
             >
-              <div style={{ padding: '2px 8px 6px', maxHeight: '130px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              <div className="px-2 pb-1.5 max-h-32 overflow-y-auto flex flex-col gap-0.5">
                 {playlists.map((pl) => (
                   <div
                     key={pl.id}
-                    onClick={() =>
-                      setSelectedPlaylistFilter(selectedPlaylistFilter === pl.id ? null : pl.id)
-                    }
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '7px',
-                      padding: '5px 6px',
-                      borderRadius: '7px',
-                      cursor: 'pointer',
-                      background: selectedPlaylistFilter === pl.id ? 'rgba(109,93,246,0.15)' : 'transparent',
-                      transition: 'background 0.15s',
-                    }}
-                    onMouseEnter={(e) => selectedPlaylistFilter !== pl.id && ((e.currentTarget as HTMLDivElement).style.background = '#1A2140')}
-                    onMouseLeave={(e) => selectedPlaylistFilter !== pl.id && ((e.currentTarget as HTMLDivElement).style.background = 'transparent')}
+                    onClick={() => handleSelectFilter(pl.id)}
+                    className={`flex items-center gap-2 p-1.5 rounded-lg cursor-pointer transition-colors ${
+                      selectedPlaylistFilter === pl.id ? 'bg-[#6D5DF6]/15' : 'hover:bg-[#1A2140]'
+                    }`}
                   >
                     {/* Checkbox */}
                     <button
                       onClick={(e) => { e.stopPropagation(); togglePlaylist(pl.id); }}
-                      style={{
-                        width: '14px', height: '14px', borderRadius: '3px', flexShrink: 0,
-                        border: pl.enabled ? '2px solid #6D5DF6' : '2px solid #4B5563',
-                        background: pl.enabled ? '#6D5DF6' : 'transparent',
-                        cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      }}
+                      className={`w-3.5 h-3.5 rounded flex-shrink-0 border cursor-pointer flex items-center justify-center ${
+                        pl.enabled ? 'bg-[#6D5DF6] border-[#6D5DF6]' : 'border-[#4B5563] bg-transparent'
+                      }`}
                     >
                       {pl.enabled && (
                         <svg width="8" height="6" viewBox="0 0 8 6" fill="none">
@@ -385,19 +255,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddPlaylist, onImportFile })
                         </svg>
                       )}
                     </button>
-                    <span style={{ fontSize: '11px', color: '#B8C1EC', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {pl.name}
-                    </span>
+                    <span className="text-xs text-[#B8C1EC] flex-1 truncate">{pl.name}</span>
                     {isLoading && loadingPlaylistId === pl.id ? (
-                      <FiRefreshCw style={{ fontSize: '11px', color: '#6D5DF6', animation: 'spin 1s linear infinite', flexShrink: 0 }} />
+                      <FiRefreshCw className="text-xs text-[#6D5DF6] animate-spin flex-shrink-0" />
                     ) : pl.type === 'url' ? (
                       <button
                         onClick={(e) => { e.stopPropagation(); refreshPlaylist(pl.id); }}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#4B5563', padding: '0', flexShrink: 0 }}
-                        onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.color = '#B8C1EC')}
-                        onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.color = '#4B5563')}
+                        className="text-[#4B5563] hover:text-[#B8C1EC] p-0.5 flex-shrink-0"
                       >
-                        <FiRefreshCw style={{ fontSize: '11px' }} />
+                        <FiRefreshCw className="text-xs" />
                       </button>
                     ) : null}
                   </div>
@@ -405,23 +271,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddPlaylist, onImportFile })
               </div>
 
               {/* Add / Import */}
-              <div style={{ display: 'flex', gap: '6px', padding: '4px 8px 8px' }}>
+              <div className="flex gap-1.5 p-2 pt-1">
                 {[
-                  { label: 'Add', icon: <FiPlusCircle style={{ fontSize: '11px' }} />, onClick: onAddPlaylist },
-                  { label: 'Import', icon: <FiUpload style={{ fontSize: '11px' }} />, onClick: onImportFile },
+                  { label: 'Add', icon: <FiPlusCircle className="text-xs" />, onClick: onAddPlaylist },
+                  { label: 'Import', icon: <FiUpload className="text-xs" />, onClick: onImportFile },
                 ].map((btn) => (
                   <button
                     key={btn.label}
                     onClick={btn.onClick}
-                    style={{
-                      flex: 1,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
-                      padding: '5px 0',
-                      background: '#1A2140', border: '1px solid #1E2A4A', borderRadius: '7px',
-                      color: '#B8C1EC', fontSize: '11px', cursor: 'pointer', transition: 'all 0.15s',
-                    }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#2C3766'; (e.currentTarget as HTMLButtonElement).style.color = 'white'; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#1A2140'; (e.currentTarget as HTMLButtonElement).style.color = '#B8C1EC'; }}
+                    className="flex-1 flex items-center justify-center gap-1 py-1 bg-[#1A2140] hover:bg-[#2C3766] border border-[#1E2A4A] rounded-lg text-[#B8C1EC] hover:text-white text-xs transition-colors"
                   >
                     {btn.icon}
                     {btn.label}
@@ -434,11 +292,46 @@ export const Sidebar: React.FC<SidebarProps> = ({ onAddPlaylist, onImportFile })
       </div>
 
       {/* Total channels footer */}
-      <div style={{ padding: '6px 12px 8px', borderTop: '1px solid #1E2A4A' }}>
-        <p style={{ color: '#6B7280', fontSize: '11px' }}>
-          Total: <span style={{ color: '#6D5DF6', fontWeight: 700 }}>{allChannels.length}</span> channels
+      <div className="p-2.5 border-t border-[#1E2A4A]">
+        <p className="text-[#6B7280] text-xs">
+          Total: <span className="text-[#6D5DF6] font-bold">{allChannels.length}</span> channels
         </p>
       </div>
     </aside>
+  );
+
+  return (
+    <>
+      {/* Desktop Sidebar (hidden on mobile) */}
+      <div className="hidden md:flex h-full flex-shrink-0">
+        {sidebarContent}
+      </div>
+
+      {/* Mobile Drawer Sidebar */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <div className="md:hidden">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSidebarOpen(false)}
+              className="fixed inset-0 bg-black/70 backdrop-blur-xs z-50 md:hidden"
+            />
+            {/* Drawer */}
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="fixed left-0 top-0 bottom-0 z-50 md:hidden"
+            >
+              {sidebarContent}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };

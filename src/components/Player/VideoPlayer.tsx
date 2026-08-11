@@ -424,7 +424,7 @@ export const VideoPlayer: React.FC = () => {
   const isFavorite = currentChannel ? favoriteIds.has(currentChannel.id) : false;
 
   return (
-    <div className="flex-1 flex flex-col bg-[#0B1020] overflow-hidden min-w-0">
+    <div className="w-full md:flex-1 flex flex-col bg-[#0B1020] overflow-hidden min-w-0 flex-shrink-0 md:flex-shrink">
 
       {/* ── VIDEO AREA ─────────────────────────────────────────────────── */}
       <div

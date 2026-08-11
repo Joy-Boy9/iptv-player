@@ -360,17 +360,7 @@ export const ChannelList: React.FC = () => {
   // Loading skeleton
   if (isLoading && filteredChannels.length === 0) {
     return (
-      <div
-        style={{
-          width: '310px',
-          flexShrink: 0,
-          background: '#0B1020',
-          borderRight: '1px solid #1E2A4A',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-      >
+      <div className="w-full md:w-[310px] flex-shrink-0 bg-[#0B1020] border-r border-[#1E2A4A] flex flex-col overflow-hidden">
         <div
           style={{
             padding: '10px 14px',
@@ -388,17 +378,7 @@ export const ChannelList: React.FC = () => {
   }
 
   return (
-    <div
-      style={{
-        width: '310px',
-        flexShrink: 0,
-        background: '#0B1020',
-        borderRight: '1px solid #1E2A4A',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-      }}
-    >
+    <div className="w-full md:w-[310px] flex-shrink-0 bg-[#0B1020] border-b md:border-b-0 md:border-r border-[#1E2A4A] flex flex-col overflow-hidden flex-1 md:flex-initial min-h-0">
       {/* List header */}
       <div
         style={{
@@ -409,7 +389,7 @@ export const ChannelList: React.FC = () => {
           justifyContent: 'space-between',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <button
             onClick={toggleSidebar}
             title={isSidebarOpen ? "Hide Sidebar" : "Show Sidebar"}
@@ -435,6 +415,11 @@ export const ChannelList: React.FC = () => {
           <span style={{ color: '#B8C1EC', fontSize: '12px', fontWeight: 500 }}>
             {filteredChannels.length} channel{filteredChannels.length !== 1 ? 's' : ''}
           </span>
+          {selectedCategory !== 'all' && (
+            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#6D5DF6]/20 text-[#8B7DF8] truncate max-w-[100px]">
+              {selectedCategory}
+            </span>
+          )}
         </div>
         {isLoading && (
           <div

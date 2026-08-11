@@ -1,14 +1,14 @@
 // =============================================
-// Header — improved premium design
+// Header — Responsive, Premium Design
 // =============================================
 
 import React, { useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { FiSearch, FiSettings, FiList, FiTv, FiX } from 'react-icons/fi';
+import { FiSearch, FiSettings, FiList, FiTv, FiX, FiMenu } from 'react-icons/fi';
 import { useUIStore } from '../../store/useUIStore';
 
 export const Header: React.FC = () => {
-  const { searchQuery, setSearchQuery, setSettingsOpen, setPlaylistManagerOpen } = useUIStore();
+  const { searchQuery, setSearchQuery, setSettingsOpen, setPlaylistManagerOpen, toggleSidebar } = useUIStore();
   const searchRef = useRef<HTMLInputElement>(null);
 
   const handleSearchChange = useCallback(
@@ -19,92 +19,56 @@ export const Header: React.FC = () => {
   );
 
   return (
-    <header
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 16px',
-        height: '56px',
-        background: '#12192E',
-        borderBottom: '1px solid #1E2A4A',
-        flexShrink: 0,
-        zIndex: 50,
-        gap: '16px',
-      }}
-    >
-      {/* Logo */}
-      <motion.div
-        style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', userSelect: 'none', flexShrink: 0 }}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-      >
-        <div
-          style={{
-            width: '34px', height: '34px', borderRadius: '10px',
-            background: 'linear-gradient(135deg, #6D5DF6, #8B7DF8)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 4px 14px rgba(109,93,246,0.4)',
-          }}
+    <header className="flex items-center justify-between px-3 md:px-4 h-14 bg-[#12192E] border-b border-[#1E2A4A] flex-shrink-0 z-40 gap-2 md:gap-4">
+      {/* Left: Sidebar Menu Toggle + Logo */}
+      <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={toggleSidebar}
+          className="p-2 rounded-lg bg-[#1A2140] text-[#B8C1EC] hover:text-white border border-[#1E2A4A] flex items-center justify-center"
+          title="Categories & Playlists"
+          aria-label="Toggle Sidebar"
         >
-          <FiTv style={{ color: 'white', fontSize: '16px' }} />
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-          <span style={{ color: 'white', fontWeight: 800, fontSize: '14px', letterSpacing: '0.04em' }}>
-            IPTV <span style={{ color: '#6D5DF6' }}>PLAYER</span>
-          </span>
-        </div>
-      </motion.div>
+          <FiMenu className="text-lg" />
+        </motion.button>
 
-      {/* Right Side */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-        {/* Search */}
-        <div style={{ position: 'relative' }}>
-          <FiSearch
-            style={{
-              position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)',
-              color: '#6B7280', fontSize: '13px', pointerEvents: 'none',
-            }}
-          />
+        <motion.div
+          className="flex items-center gap-2 cursor-pointer select-none"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-gradient-to-br from-[#6D5DF6] to-[#8B7DF8] flex items-center justify-center shadow-lg shadow-[#6D5DF6]/30">
+            <FiTv className="text-white text-base md:text-lg" />
+          </div>
+          <div className="flex flex-col leading-tight">
+            <span className="text-white font-extrabold text-sm md:text-base tracking-wide">
+              IPTV <span className="text-[#6D5DF6]">PLAYER</span>
+            </span>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Right Side: Search + Action Buttons */}
+      <div className="flex items-center gap-1.5 md:gap-2 flex-shrink-0">
+        {/* Search Input */}
+        <div className="relative">
+          <FiSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#6B7280] text-xs md:text-sm pointer-events-none" />
           <input
             ref={searchRef}
             id="header-search"
             type="text"
-            placeholder="Search channels..."
+            placeholder="Search..."
             value={searchQuery}
             onChange={handleSearchChange}
-            style={{
-              background: '#1A2140',
-              border: '1px solid #1E2A4A',
-              borderRadius: '10px',
-              paddingLeft: '32px',
-              paddingRight: searchQuery ? '30px' : '14px',
-              paddingTop: '7px',
-              paddingBottom: '7px',
-              fontSize: '13px',
-              color: 'white',
-              outline: 'none',
-              width: '180px',
-              transition: 'all 0.2s',
-            }}
-            onFocus={(e) => {
-              e.target.style.borderColor = '#6D5DF6';
-              e.target.style.width = '240px';
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = '#1E2A4A';
-              if (!searchQuery) e.target.style.width = '180px';
-            }}
+            className="bg-[#1A2140] border border-[#1E2A4A] rounded-xl pl-8 pr-7 py-1.5 text-xs md:text-sm text-white outline-none w-28 sm:w-44 md:w-56 focus:border-[#6D5DF6] transition-all"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              style={{
-                position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)',
-                background: 'none', border: 'none', cursor: 'pointer', color: '#6B7280', padding: '2px',
-              }}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-white p-0.5"
             >
-              <FiX style={{ fontSize: '13px' }} />
+              <FiX className="text-xs" />
             </button>
           )}
         </div>
@@ -116,14 +80,9 @@ export const Header: React.FC = () => {
           whileTap={{ scale: 0.95 }}
           onClick={() => setPlaylistManagerOpen(true)}
           title="Playlist Manager"
-          style={{
-            background: '#1A2140', border: '1px solid #1E2A4A', borderRadius: '10px',
-            padding: '7px', cursor: 'pointer', color: '#B8C1EC', display: 'flex', alignItems: 'center',
-            transition: 'all 0.2s',
-          }}
-
+          className="p-2 bg-[#1A2140] border border-[#1E2A4A] rounded-xl text-[#B8C1EC] hover:text-white flex items-center justify-center transition-colors"
         >
-          <FiList style={{ fontSize: '16px' }} />
+          <FiList className="text-base" />
         </motion.button>
 
         {/* Settings */}
@@ -133,13 +92,9 @@ export const Header: React.FC = () => {
           whileTap={{ scale: 0.95 }}
           onClick={() => setSettingsOpen(true)}
           title="Settings"
-          style={{
-            background: '#1A2140', border: '1px solid #1E2A4A', borderRadius: '10px',
-            padding: '7px', cursor: 'pointer', color: '#B8C1EC', display: 'flex', alignItems: 'center',
-            transition: 'all 0.2s',
-          }}
+          className="p-2 bg-[#1A2140] border border-[#1E2A4A] rounded-xl text-[#B8C1EC] hover:text-white flex items-center justify-center transition-colors"
         >
-          <FiSettings style={{ fontSize: '16px' }} />
+          <FiSettings className="text-base" />
         </motion.button>
       </div>
     </header>

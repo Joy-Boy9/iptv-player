@@ -1,9 +1,10 @@
 // =============================================
-// Main App Component
+// Main App Component — Fully Responsive Layout
 // =============================================
 
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Header } from './components/Header/Header';
 import { Sidebar } from './components/Sidebar/Sidebar';
 import { ChannelList } from './components/ChannelList/ChannelList';
 import { VideoPlayer } from './components/Player/VideoPlayer';
@@ -49,7 +50,7 @@ const LoadingOverlay: React.FC<{ isLoading: boolean }> = ({ isLoading }) => (
 
 function App() {
   const { initializeDefaultPlaylist } = usePlaylistStore();
-  const { setPlaylistManagerOpen, isSidebarOpen } = useUIStore();
+  const { setPlaylistManagerOpen, setSidebarOpen } = useUIStore();
   const [appInitialized, setAppInitialized] = React.useState(false);
 
   // Initialize on mount
@@ -57,6 +58,11 @@ function App() {
     const init = async () => {
       await initializeDefaultPlaylist();
       setAppInitialized(true);
+
+      // On mobile screens, start with sidebar drawer closed
+      if (window.innerWidth < 768) {
+        setSidebarOpen(false);
+      }
     };
     init();
   }, []);
@@ -80,21 +86,27 @@ function App() {
     <div className="h-screen w-screen flex flex-col bg-bg-primary overflow-hidden">
       <LoadingOverlay isLoading={showLoading} />
 
+      {/* Top Header */}
+      <Header />
+
       {/* Main Content */}
-      <main className="flex-1 flex overflow-hidden">
-        {/* Left Sidebar */}
-        {isSidebarOpen && (
-          <Sidebar
-            onAddPlaylist={() => setPlaylistManagerOpen(true)}
-            onImportFile={() => setPlaylistManagerOpen(true)}
-          />
-        )}
+      <main className="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0">
+        {/* Left Sidebar / Mobile Drawer */}
+        <Sidebar
+          onAddPlaylist={() => setPlaylistManagerOpen(true)}
+          onImportFile={() => setPlaylistManagerOpen(true)}
+        />
 
-        {/* Channel List (Center) */}
-        <ChannelList />
-
-        {/* Video Player (Right) */}
-        <VideoPlayer />
+        {/* Desktop Layout: Channel List then Video Player */}
+        {/* Mobile Layout: Video Player at top, Channel List below */}
+        <div className="contents md:flex md:flex-1 md:overflow-hidden">
+          <div className="order-2 md:order-1 flex-1 md:flex-initial flex flex-col min-h-0 overflow-hidden">
+            <ChannelList />
+          </div>
+          <div className="order-1 md:order-2 flex-shrink-0 md:flex-1 flex flex-col min-h-0">
+            <VideoPlayer />
+          </div>
+        </div>
       </main>
 
       {/* Modals */}
